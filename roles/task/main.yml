@@ -1,0 +1,24 @@
+  tasks:
+    - name: Download Collibra Data Quality installer
+      get_url: 
+        url: "{{repo-req-url}}"
+        dest: "{{owl-core-home}}cdq-spark.tar.gz"
+        headers:
+          X-Amz-Algorithm: "{{ repo-req-alg }}"
+          X-Amz-Credential: "{{ repo-req-cred }}" 
+          X-Amz-Date: "{{repo-req-date}}"
+          X-Amz-Expires: 604800
+          X-Amz-SignedHeaders: "{{ repo-req-sh }}"
+          X-Amz-Signature: "{{repo-req-sig}}"
+
+    - name: Extract installer.
+      ansible.builtin.command: tar xf {{owl-core-home}}cdq-spark.tar.gz 
+
+    - name: Install CDQ with existing Postgres
+      ansible.builtin.shell: "{{owl-core-home}}setup.sh"
+      args:
+        owlbase: "{{owl-core-home}}"
+        user: "{{ cdq-metastore-user }}"
+        pgpassword: "{{ cdq-metastore-pwd }}"
+        options: "{{ cdq-options }}" 
+        pgserver: "{{ cdq-metastore-connection-string }}"

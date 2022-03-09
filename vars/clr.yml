@@ -1,0 +1,16 @@
+---
+keypair: "key-05f12cbe40b9cc69a"
+instance_type: "t2.micro"
+image: "ami-0afbac37df1f4b2ba" # Base RHEL 7.6 AMI
+vpc_subnet_id: "subnet-4279562a"
+tag_env: "Dev"
+tag_name: "cdq-deployment"
+tag_role: "owl-core"
+tag_team: "cdq-ops"
+tag_service: "collibra-data-quality"
+aws-grp-nme: "cdq-core-deploy"
+fleet_amt: 2
+region: "us-east-1"
+security_group: "sg-f8fa1f93"
+accesskey: "none"
+secretkey: "none"

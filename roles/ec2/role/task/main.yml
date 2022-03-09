@@ -1,0 +1,42 @@
+# Launch 5 instances with the following parameters.  Register the output.
+tasks:
+  - name: Launch instance
+    ec2:
+      keypair: "{{keypair}}"
+      group: "{{security_group}}"
+      instance_type: "{{instance_type}}" 
+      image: "{{ image }}"
+      vpc_subnet_id: "{{ vpc_subnet_id }}"
+      network:
+        assign_public_ip: yes
+      wait: true 
+      count: "{{ fleet_amt }}"
+      region: "{{ region }}"
+      group_id: "{{ security_group_id }}"
+      aws_access_key: "{{ accesskey }}"
+      aws_secret_key: "{{ secretkey }}"
+      instance_tags:
+        Env: "{{ tag_env }}"
+        Name: "{{ tag_name }}"
+        Role: "{{ tag_role }}"
+        Team: "{{ tag_team }}"
+        Service: "{{ tag_svc }}"
+    register: ec2
+
+  # Use with_items to add each instances public IP to a new hostgroup for use in the next play.
+
+  - name: Add new instances to host group
+    add_host: hostname={{item.public_ip}} groupname={{ aws-grp-nme }}
+    with_items: ec2.instances
+
+  - name: Wait for the instances to boot by checking the ssh port
+    wait_for: host={{item.public_dns_name}} port=22 delay=60 timeout=320 state=started
+    with_items: ec2.instances
+
+  # Use the ec2_vol module to create volumes for attachment to each instance.
+  # Use with_items to attach to each instance (by returned id) launched previously.
+
+  - name: Create a volume and attach
+    ec2_vol: volume_size=20 instance={{item.id}}
+    with_items: ec2.instances
+

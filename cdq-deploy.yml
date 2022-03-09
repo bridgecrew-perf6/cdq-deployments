@@ -1,0 +1,24 @@
+- name: Provision CDQ Core components
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars_files:
+  - secret.yml
+  - var/clr.yml
+  - var/agent.yml
+  - var/core.yml
+
+  roles:
+  - role: ec2
+    keypair: "{{ keypair }}"
+    count: 1
+    tag_name: "{{ tag_name }}"
+    accesskey: "{{ akey }}"
+    secretkey: "{{ skey }}"
+
+- hosts: tag_Name_cdq_core
+  roles:
+  - cdq-core
+- hosts: tag_Name_cdq_agent
+  roles:
+  - cdq-agent
